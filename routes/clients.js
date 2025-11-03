@@ -1,152 +1,24 @@
 const express = require('express');
-const { Client, Booking, Stay } = require('../models');
+const ClientController = require('../controllers/ClientController');
 const { isAuthenticated, hasRole } = require('../middleware/auth');
 const router = express.Router();
 
 // Список клиентов
-router.get('/', isAuthenticated, async (req, res) => {
-  try {
-    const clients = await Client.findAll({
-      order: [['last_name', 'ASC']]
-    });
-    res.render('clients/index', { 
-      clients,
-      user: req.session.user 
-    });
-  } catch (error) {
-    res.status(500).render('error', { 
-      message: 'Ошибка сервера',
-      user: req.session.user 
-    });
-  }
-});
+router.get('/', isAuthenticated, ClientController.list);
 
 // Форма добавления клиента
-router.get('/add', isAuthenticated, hasRole('Администратор'), (req, res) => {
-  res.render('clients/add', { 
-    user: req.session.user 
-  });
-});
+router.get('/add', isAuthenticated, hasRole('Администратор'), ClientController.showAddForm);
 
 // Добавление клиента
-router.post('/add', isAuthenticated, hasRole('Администратор'), async (req, res) => {
-  try {
-    const {
-      passport_data,
-      last_name,
-      first_name,
-      middle_name,
-      phone,
-      registration_address,
-      birth_date,
-    } = req.body;
-
-    await Client.create({
-      passport_data,
-      last_name,
-      first_name,
-      middle_name,
-      phone,
-      registration_address,
-      birth_date,
-    });
-
-    res.redirect('/clients');
-  } catch (error) {
-    res.status(400).render('clients/add', { 
-      error: 'Ошибка добавления клиента: ' + error.message,
-      user: req.session.user 
-    });
-  }
-});
+router.post('/add', isAuthenticated, hasRole('Администратор'), ClientController.add);
 
 // Форма редактирования клиента
-router.get('/edit/:passport', isAuthenticated, hasRole('Администратор'), async (req, res) => {
-  try {
-    const client = await Client.findByPk(req.params.passport);
-    if (!client) {
-      return res.status(404).render('error', { 
-        message: 'Клиент не найден',
-        user: req.session.user 
-      });
-    }
-    res.render('clients/edit', { 
-      client,
-      user: req.session.user 
-    });
-  } catch (error) {
-    res.status(500).render('error', { 
-      message: 'Ошибка сервера',
-      user: req.session.user 
-    });
-  }
-});
+router.get('/edit/:passport', isAuthenticated, hasRole('Администратор'), ClientController.showEditForm);
 
 // Обновление клиента
-router.post('/edit/:passport', isAuthenticated, hasRole('Администратор'), async (req, res) => {
-  try {
-    const {
-      last_name,
-      first_name,
-      middle_name,
-      phone,
-      registration_address,
-      birth_date,
-    } = req.body;
-
-    await Client.update(
-      {
-        last_name,
-        first_name,
-        middle_name,
-        phone,
-        registration_address,
-        birth_date,
-      },
-      {
-        where: { passport_data: req.params.passport },
-      }
-    );
-
-    res.redirect('/clients');
-  } catch (error) {
-    const client = await Client.findByPk(req.params.passport);
-    res.status(400).render('clients/edit', { 
-      client,
-      error: 'Ошибка обновления клиента: ' + error.message,
-      user: req.session.user 
-    });
-  }
-});
+router.post('/edit/:passport', isAuthenticated, hasRole('Администратор'), ClientController.update);
 
 // Удаление клиента
-router.post('/delete/:passport', isAuthenticated, hasRole('Администратор'), async (req, res) => {
-  try {
-    // Проверяем есть ли связанные бронирования или проживания
-    const bookingsCount = await Booking.count({ 
-      where: { client_passport: req.params.passport } 
-    });
-    const staysCount = await Stay.count({ 
-      where: { client_passport: req.params.passport } 
-    });
-
-    if (bookingsCount > 0 || staysCount > 0) {
-      return res.status(400).render('error', { 
-        message: 'Нельзя удалить клиента с существующими бронированиями или проживаниями',
-        user: req.session.user 
-      });
-    }
-
-    await Client.destroy({
-      where: { passport_data: req.params.passport },
-    });
-    res.redirect('/clients');
-  } catch (error) {
-    res.status(500).render('error', { 
-      message: 'Ошибка удаления клиента: ' + error.message,
-      user: req.session.user 
-    });
-  }
-});
+router.post('/delete/:passport', isAuthenticated, hasRole('Администратор'), ClientController.delete);
 
 module.exports = router;
