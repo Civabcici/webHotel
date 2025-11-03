@@ -67,19 +67,19 @@
             <div class="form-group">
                 <label for="check_in_date">Дата заезда:*</label>
                 <input type="date" id="check_in_date" name="check_in_date" 
-                       value="<%= booking.check_in_date %>" required autofocus>
+                    value="<%= booking.check_in_date %>" required autofocus>
             </div>
 
             <div class="form-group">
                 <label for="check_out_date">Дата выезда:*</label>
                 <input type="date" id="check_out_date" name="check_out_date" 
-                       value="<%= booking.check_out_date %>" required>
+                    value="<%= booking.check_out_date %>" required>
             </div>
 
             <div class="form-group">
                 <label for="guests_count">Количество гостей:*</label>
                 <input type="number" id="guests_count" name="guests_count" 
-                       value="<%= booking.guests_count || 1 %>" required min="1" max="10">
+                    value="<%= booking.guests_count || 1 %>" required min="1" max="10">
             </div>
 
             <div class="form-group">
@@ -95,7 +95,7 @@
             <div class="form-group">
                 <label for="special_requests">Особые пожелания:</label>
                 <textarea id="special_requests" name="special_requests" 
-                          rows="3"><%= booking.special_requests || '' %></textarea>
+                    rows="3"><%= booking.special_requests || '' %></textarea>
             </div>
 
             <div class="info-box" style="margin: 1.5rem 0;">

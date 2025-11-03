@@ -57,7 +57,7 @@ User.belongsTo(Role, { foreignKey: 'roleId' });
 const syncDatabase = async () => {
   try {
     await sequelize.sync({ force: false });
-    console.log('✅ База данных синхронизирована');
+    console.log('База данных синхронизирована');
 
     // Создание базовых ролей если их нет
     const roles = await Role.findAll();
@@ -72,10 +72,10 @@ const syncDatabase = async () => {
           description: 'Стандартный пользователь системы'
         },
       ]);
-      console.log('✅ Роли по умолчанию созданы');
+      console.log('Роли по умолчанию созданы');
     }
   } catch (error) {
-    console.error('❌ Ошибка синхронизации базы данных:', error);
+    console.error('Ошибка синхронизации базы данных:', error);
     throw error;
   }
 };

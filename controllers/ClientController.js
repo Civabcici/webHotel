@@ -1,4 +1,3 @@
-// controllers/ClientController.js
 const { Client, Booking, Stay } = require('../models');
 
 class ClientController {

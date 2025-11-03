@@ -1,4 +1,3 @@
-// controllers/BookingController.js
 const { Booking, Client, Room } = require('../models');
 const { Sequelize } = require('sequelize');
 

@@ -1,4 +1,3 @@
-// controllers/AuthController.js
 const bcrypt = require('bcryptjs');
 const { User, Role } = require('../models');
 

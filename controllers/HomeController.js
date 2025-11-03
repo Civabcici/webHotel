@@ -1,4 +1,3 @@
-// controllers/HomeController.js
 class HomeController {
   // Главная страница
   static async showHomePage(req, res) {

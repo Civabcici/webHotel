@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -65,12 +64,10 @@ const startServer = async () => {
     await syncDatabase();
     
     app.listen(PORT, () => {
-      console.log(`🚀 Сервер запущен на http://localhost:${PORT}`);
-      console.log(`📁 Окружение: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`✅ База данных готова к работе`);
+      console.log(`Сервер запущен на http://localhost:${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Ошибка запуска сервера:', error);
+    console.error('Ошибка запуска сервера:', error);
     process.exit(1);
   }
 };

@@ -1,4 +1,3 @@
-// middleware/auth.js
 const { User, Role } = require('../models');
 
 // Middleware для проверки аутентификации

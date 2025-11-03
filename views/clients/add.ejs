@@ -40,45 +40,45 @@
             <div class="form-group">
                 <label for="passport_data">Паспортные данные:*</label>
                 <input type="text" id="passport_data" name="passport_data" required 
-                       placeholder="Серия и номер паспорта" autofocus>
+                    placeholder="Серия и номер паспорта" autofocus>
                 <small style="color: #7f8c8d; font-size: 0.9rem;">Пример: 1234 567890</small>
             </div>
 
             <div class="form-group">
                 <label for="last_name">Фамилия:*</label>
                 <input type="text" id="last_name" name="last_name" required 
-                       placeholder="Введите фамилию">
+                    placeholder="Введите фамилию">
             </div>
 
             <div class="form-group">
                 <label for="first_name">Имя:*</label>
                 <input type="text" id="first_name" name="first_name" required 
-                       placeholder="Введите имя">
+                    placeholder="Введите имя">
             </div>
 
             <div class="form-group">
                 <label for="middle_name">Отчество:</label>
                 <input type="text" id="middle_name" name="middle_name" 
-                       placeholder="Введите отчество (если есть)">
+                    placeholder="Введите отчество (если есть)">
             </div>
 
             <div class="form-group">
                 <label for="phone">Телефон:*</label>
                 <input type="tel" id="phone" name="phone" required 
-                       placeholder="+7 (XXX) XXX-XX-XX">
+                    placeholder="+7 (XXX) XXX-XX-XX">
                 <small style="color: #7f8c8d; font-size: 0.9rem;">Формат: +7 (999) 123-45-67</small>
             </div>
 
             <div class="form-group">
                 <label for="registration_address">Адрес регистрации:*</label>
                 <textarea id="registration_address" name="registration_address" required 
-                          placeholder="Полный адрес регистрации" rows="3"></textarea>
+                        placeholder="Полный адрес регистрации" rows="3"></textarea>
             </div>
 
             <div class="form-group">
                 <label for="birth_date">Дата рождения:*</label>
                 <input type="date" id="birth_date" name="birth_date" required 
-                       max="<%= new Date().toISOString().split('T')[0] %>">
+                    max="<%= new Date().toISOString().split('T')[0] %>">
             </div>
 
             <div class="form-actions">

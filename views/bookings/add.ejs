@@ -67,25 +67,25 @@
             <div class="form-group">
                 <label for="check_in_date">Дата заезда:*</label>
                 <input type="date" id="check_in_date" name="check_in_date" required 
-                       min="<%= new Date().toISOString().split('T')[0] %>" autofocus>
+                    min="<%= new Date().toISOString().split('T')[0] %>" autofocus>
             </div>
 
             <div class="form-group">
                 <label for="check_out_date">Дата выезда:*</label>
                 <input type="date" id="check_out_date" name="check_out_date" required 
-                       min="<%= new Date().toISOString().split('T')[0] %>">
+                    min="<%= new Date().toISOString().split('T')[0] %>">
             </div>
 
             <div class="form-group">
                 <label for="guests_count">Количество гостей:*</label>
                 <input type="number" id="guests_count" name="guests_count" value="1" 
-                       required min="1" max="10">
+                    required min="1" max="10">
             </div>
 
             <div class="form-group">
                 <label for="special_requests">Особые пожелания:</label>
                 <textarea id="special_requests" name="special_requests" 
-                          placeholder="Дополнительные пожелания клиента" rows="3"></textarea>
+                        placeholder="Дополнительные пожелания клиента" rows="3"></textarea>
             </div>
 
             <div class="info-box" style="margin: 1.5rem 0;">
