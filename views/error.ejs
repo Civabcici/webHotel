@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div style="text-align: center; padding: 4rem 0;">
+            <div style="font-size: 4rem; color: #e74c3c; margin-bottom: 1rem;">⚠️</div>
+            <h2 style="color: #2c3e50; margin-bottom: 1rem;">Произошла ошибка</h2>
+            <p style="color: #7f8c8d; margin-bottom: 2rem; font-size: 1.1rem;">
+                <%= message %>
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/" class="btn btn-primary">На главную</a>
+                <a href="javascript:history.back()" class="btn btn-secondary">Назад</a>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

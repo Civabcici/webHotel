@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Клиенты - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients" class="active">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Управление клиентами</h2>
+            <% if (user && user.role === 'Администратор') { %>
+                <a href="/clients/add" class="btn btn-primary">Добавить клиента</a>
+            <% } %>
+        </div>
+
+        <% if (clients && clients.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Паспортные данные</th>
+                        <th>Фамилия</th>
+                        <th>Имя</th>
+                        <th>Отчество</th>
+                        <th>Телефон</th>
+                        <th>Дата рождения</th>
+                        <th>Адрес регистрации</th>
+                        <% if (user && user.role === 'Администратор') { %>
+                            <th>Действия</th>
+                        <% } %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% clients.forEach(client => { %>
+                    <tr>
+                        <td><%= client.passport_data %></td>
+                        <td><%= client.last_name %></td>
+                        <td><%= client.first_name %></td>
+                        <td><%= client.middle_name || '-' %></td>
+                        <td><%= client.phone %></td>
+                        <td><%= new Date(client.birth_date).toLocaleDateString('ru-RU') %></td>
+                        <td><%= client.registration_address %></td>
+                        <% if (user && user.role === 'Администратор') { %>
+                            <td class="actions">
+                                <a href="/clients/edit/<%= client.passport_data %>" class="btn btn-edit">Изменить</a>
+                                <form action="/clients/delete/<%= client.passport_data %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-delete" onclick="return confirm('Вы уверены, что хотите удалить клиента?')">Удалить</button>
+                                </form>
+                            </td>
+                        <% } %>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="info-box">
+                <h3>Клиенты не найдены</h3>
+                <p>В системе пока нет зарегистрированных клиентов.</p>
+                <% if (user && user.role === 'Администратор') { %>
+                    <a href="/clients/add" class="btn btn-primary" style="margin-top: 1rem;">Добавить первого клиента</a>
+                <% } %>
+            </div>
+        <% } %>
+
+        <% if (clients && clients.length > 0) { %>
+            <div style="margin-top: 1rem; color: #7f8c8d; text-align: center;">
+                Найдено клиентов: <strong><%= clients.length %></strong>
+            </div>
+        <% } %>
+    </main>
+</body>
+</html>

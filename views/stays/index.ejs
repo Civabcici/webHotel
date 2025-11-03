@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проживания - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays" class="active">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Управление проживаниями</h2>
+            <% if (user && user.role === 'Администратор') { %>
+                <a href="/stays/add" class="btn btn-primary">Добавить проживание</a>
+            <% } %>
+        </div>
+
+        <% if (stays && stays.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Клиент</th>
+                        <th>Номер</th>
+                        <th>Заезд</th>
+                        <th>Выезд</th>
+                        <th>Кол-во ночей</th>
+                        <th>Общая стоимость</th>
+                        <th>Оплачено</th>
+                        <th>Статус</th>
+                        <th>Статус оплаты</th>
+                        <% if (user && user.role === 'Администратор') { %>
+                            <th>Действия</th>
+                        <% } %>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% stays.forEach(stay => { %>
+                    <tr>
+                        <td><%= stay.id %></td>
+                        <td>
+                            <% if (stay.Client) { %>
+                                <%= stay.Client.last_name %> <%= stay.Client.first_name %>
+                            <% } else { %>
+                                <span style="color: #e74c3c;">Клиент не найден</span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <% if (stay.Room) { %>
+                                №<%= stay.Room.room_number %>
+                            <% } else { %>
+                                <span style="color: #e74c3c;">Номер не найден</span>
+                            <% } %>
+                        </td>
+                        <td><%= new Date(stay.check_in_date).toLocaleDateString('ru-RU') %></td>
+                        <td><%= new Date(stay.check_out_date).toLocaleDateString('ru-RU') %></td>
+                        <td>
+                            <% 
+                                const nights = Math.ceil((new Date(stay.check_out_date) - new Date(stay.check_in_date)) / (1000 * 60 * 60 * 24));
+                            %>
+                            <%= nights %>
+                        </td>
+                        <td><%= stay.total_cost.toLocaleString('ru-RU') %> ₽</td>
+                        <td><%= (stay.paid_amount || 0).toLocaleString('ru-RU') %> ₽</td>
+                        <td>
+                            <span class="status-badge status-<%= stay.status %>">
+                                <% 
+                                    const statusLabels = {
+                                        'active': 'Активно',
+                                        'completed': 'Завершено',
+                                        'cancelled': 'Отменено'
+                                    };
+                                %>
+                                <%= statusLabels[stay.status] || stay.status %>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="payment-badge payment-<%= stay.payment_status %>">
+                                <% 
+                                    const paymentLabels = {
+                                        'pending': 'Не оплачено',
+                                        'partial': 'Частично',
+                                        'paid': 'Оплачено'
+                                    };
+                                %>
+                                <%= paymentLabels[stay.payment_status] || stay.payment_status %>
+                            </span>
+                        </td>
+                        <% if (user && user.role === 'Администратор') { %>
+                            <td class="actions">
+                                <a href="/stays/edit/<%= stay.id %>" class="btn btn-edit">Изменить</a>
+                                <form action="/stays/delete/<%= stay.id %>" method="POST" style="display:inline;">
+                                    <button type="submit" class="btn btn-delete" onclick="return confirm('Вы уверены, что хотите удалить это проживание?')">Удалить</button>
+                                </form>
+                            </td>
+                        <% } %>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <div class="info-box">
+                <h3>Проживания не найдены</h3>
+                <p>В системе пока нет зарегистрированных проживаний.</p>
+                <% if (user && user.role === 'Администратор') { %>
+                    <a href="/stays/add" class="btn btn-primary" style="margin-top: 1rem;">Добавить первое проживание</a>
+                <% } %>
+            </div>
+        <% } %>
+
+        <% if (stays && stays.length > 0) { %>
+            <div style="margin-top: 1rem; color: #7f8c8d; text-align: center;">
+                Найдено проживаний: <strong><%= stays.length %></strong>
+            </div>
+        <% } %>
+    </main>
+
+    <style>
+        .status-badge, .payment-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-active { background: #27ae60; color: white; }
+        .status-completed { background: #3498db; color: white; }
+        .status-cancelled { background: #e74c3c; color: white; }
+        .payment-pending { background: #e74c3c; color: white; }
+        .payment-partial { background: #f39c12; color: white; }
+        .payment-paid { background: #27ae60; color: white; }
+    </style>
+</body>
+</html>

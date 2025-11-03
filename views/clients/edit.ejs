@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать клиента - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Редактирование клиента</h2>
+            <a href="/clients" class="btn btn-secondary">← Назад к клиентам</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <form action="/clients/edit/<%= client.passport_data %>" method="POST" class="form">
+            <div class="form-group">
+                <label for="passport_data">Паспортные данные:*</label>
+                <input type="text" id="passport_data" name="passport_data" 
+                       value="<%= client.passport_data %>" required readonly 
+                       style="background: #f8f9fa;">
+                <small style="color: #7f8c8d; font-size: 0.9rem;">Паспортные данные нельзя изменить</small>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Фамилия:*</label>
+                <input type="text" id="last_name" name="last_name" 
+                       value="<%= client.last_name %>" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="first_name">Имя:*</label>
+                <input type="text" id="first_name" name="first_name" 
+                       value="<%= client.first_name %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="middle_name">Отчество:</label>
+                <input type="text" id="middle_name" name="middle_name" 
+                       value="<%= client.middle_name || '' %>">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Телефон:*</label>
+                <input type="tel" id="phone" name="phone" 
+                       value="<%= client.phone %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="registration_address">Адрес регистрации:*</label>
+                <textarea id="registration_address" name="registration_address" 
+                          required rows="3"><%= client.registration_address %></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="birth_date">Дата рождения:*</label>
+                <input type="date" id="birth_date" name="birth_date" 
+                       value="<%= client.birth_date %>" required 
+                       max="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                <a href="/clients" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+
+        <div class="info-box" style="margin-top: 2rem;">
+            <h3>Информация о клиенте</h3>
+            <p><strong>Паспортные данные:</strong> <%= client.passport_data %></p>
+            <p><strong>Дата создания записи:</strong> 
+                <% if (client.createdAt) { %>
+                    <%= new Date(client.createdAt).toLocaleDateString('ru-RU') %>
+                <% } else { %>
+                    Не указана
+                <% } %>
+            </p>
+            <p><strong>Последнее обновление:</strong> 
+                <% if (client.updatedAt) { %>
+                    <%= new Date(client.updatedAt).toLocaleDateString('ru-RU') %>
+                <% } else { %>
+                    Не указана
+                <% } %>
+            </p>
+        </div>
+    </main>
+
+    <script>
+        // Автоматическое форматирование телефона
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('7') || value.startsWith('8')) {
+                value = value.substring(1);
+            }
+            if (value.length > 0) {
+                value = '+7 (' + value;
+                if (value.length > 7) value = value.substring(0, 7) + ') ' + value.substring(7);
+                if (value.length > 12) value = value.substring(0, 12) + '-' + value.substring(12);
+                if (value.length > 15) value = value.substring(0, 15) + '-' + value.substring(15);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>

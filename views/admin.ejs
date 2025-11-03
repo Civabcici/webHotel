@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ-панель - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <a href="/admin" class="active">Админ-панель</a>
+                <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Административная панель</h2>
+            <a href="/" class="btn btn-secondary">На главную</a>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Пользователи</h3>
+                <p><%= users.length %></p>
+            </div>
+            <div class="stat-card">
+                <h3>Номера</h3>
+                <p><%= rooms.length %></p>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>Системная информация</h3>
+            <p><strong>Текущий пользователь:</strong> <%= user.login %> (<%= user.role %>)</p>
+            <p><strong>Время сервера:</strong> <%= new Date().toLocaleString('ru-RU') %></p>
+        </div>
+    </main>
+</body>
+</html>

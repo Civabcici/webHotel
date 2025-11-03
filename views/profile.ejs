@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <a href="/profile" class="active">Профиль</a>
+                <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Мой профиль</h2>
+            <a href="/" class="btn btn-secondary">На главную</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="success"><%= success %></div>
+        <% } %>
+
+        <div class="form">
+            <form method="POST" action="/profile/update">
+                <div class="form-group">
+                    <label for="login">Логин:</label>
+                    <input type="text" id="login" name="login" value="<%= user.login %>" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Роль:</label>
+                    <input type="text" id="role" value="<%= user.Role.name %>" readonly style="background: #f8f9fa;">
+                </div>
+
+                <h3 style="margin: 2rem 0 1rem 0; color: #2c3e50;">Смена пароля</h3>
+                <p style="color: #7f8c8d; margin-bottom: 1.5rem;">Оставьте поля пустыми, если не хотите менять пароль</p>
+
+                <div class="form-group">
+                    <label for="currentPassword">Текущий пароль:</label>
+                    <input type="password" id="currentPassword" name="currentPassword">
+                </div>
+
+                <div class="form-group">
+                    <label for="newPassword">Новый пароль:</label>
+                    <input type="password" id="newPassword" name="newPassword">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Подтвердите новый пароль:</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword">
+                </div>
+
+                <div class="form-actions">
+                    <a href="/" class="btn btn-secondary">Отмена</a>
+                    <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="session-info">
+            <h3>Информация о сессии</h3>
+            <p><strong>ID пользователя:</strong> <%= user.id %></p>
+            <p><strong>Роль в системе:</strong> <%= user.Role.name %></p>
+            <p><strong>Логин:</strong> <%= user.login %></p>
+            <p><strong>Статус:</strong> <%= user.is_active ? 'Активен' : 'Неактивен' %></p>
+        </div>
+    </main>
+</body>
+</html>

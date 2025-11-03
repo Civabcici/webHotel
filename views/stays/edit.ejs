@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать проживание - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Редактирование проживания #<%= stay.id %></h2>
+            <a href="/stays" class="btn btn-secondary">← Назад к проживаниям</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <form action="/stays/edit/<%= stay.id %>" method="POST" class="form">
+            <div class="form-group">
+                <label for="client_passport">Клиент:*</label>
+                <select id="client_passport" name="client_passport" required>
+                    <option value="">Выберите клиента</option>
+                    <% clients.forEach(client => { %>
+                        <option value="<%= client.passport_data %>" 
+                                <%= stay.client_passport === client.passport_data ? 'selected' : '' %>>
+                            <%= client.last_name %> <%= client.first_name %> (<%= client.passport_data %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="room_id">Номер:*</label>
+                <select id="room_id" name="room_id" required>
+                    <option value="">Выберите номер</option>
+                    <% rooms.forEach(room => { %>
+                        <option value="<%= room.id %>" 
+                                <%= stay.room_id === room.id ? 'selected' : '' %>
+                                data-price="<%= room.price_per_night %>">
+                            №<%= room.room_number %> - <%= room.room_type %> (<%= room.price_per_night %> ₽/ночь)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="check_in_date">Дата заезда:*</label>
+                <input type="date" id="check_in_date" name="check_in_date" 
+                    value="<%= stay.check_in_date %>" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="check_out_date">Дата выезда:*</label>
+                <input type="date" id="check_out_date" name="check_out_date" 
+                    value="<%= stay.check_out_date %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="total_cost">Общая стоимость:*</label>
+                <input type="number" id="total_cost" name="total_cost" 
+                    value="<%= stay.total_cost %>" step="0.01" required min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="paid_amount">Оплаченная сумма:</label>
+                <input type="number" id="paid_amount" name="paid_amount" 
+                    value="<%= stay.paid_amount || 0 %>" step="0.01" min="0">
+            </div>
+
+            <div class="form-group">
+                <label for="status">Статус проживания:*</label>
+                <select id="status" name="status" required>
+                    <option value="active" <%= stay.status === 'active' ? 'selected' : '' %>>Активно</option>
+                    <option value="completed" <%= stay.status === 'completed' ? 'selected' : '' %>>Завершено</option>
+                    <option value="cancelled" <%= stay.status === 'cancelled' ? 'selected' : '' %>>Отменено</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="payment_status">Статус оплаты:*</label>
+                <select id="payment_status" name="payment_status" required>
+                    <option value="pending" <%= stay.payment_status === 'pending' ? 'selected' : '' %>>Не оплачено</option>
+                    <option value="partial" <%= stay.payment_status === 'partial' ? 'selected' : '' %>>Частично оплачено</option>
+                    <option value="paid" <%= stay.payment_status === 'paid' ? 'selected' : '' %>>Оплачено</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Примечания:</label>
+                <textarea id="notes" name="notes" rows="3"><%= stay.notes || '' %></textarea>
+            </div>
+
+            <div class="info-box" style="margin: 1.5rem 0;">
+                <h3>Информация о проживании</h3>
+                <p><strong>Количество ночей:</strong> 
+                    <% 
+                        const nights = Math.ceil((new Date(stay.check_out_date) - new Date(stay.check_in_date)) / (1000 * 60 * 60 * 24));
+                    %>
+                    <%= nights %>
+                </p>
+                <p><strong>Остаток к оплате:</strong> 
+                    <% 
+                        const remaining = stay.total_cost - (stay.paid_amount || 0);
+                    %>
+                    <span style="color: <%= remaining === 0 ? '#27ae60' : remaining > 0 ? '#f39c12' : '#e74c3c' %>">
+                        <%= remaining.toLocaleString('ru-RU') %> ₽
+                    </span>
+                </p>
+                <p><strong>Стоимость за ночь:</strong> 
+                    <%= (stay.total_cost / nights).toLocaleString('ru-RU', {maximumFractionDigits: 2}) %> ₽
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                <a href="/stays" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        function updatePaymentStatus() {
+            const totalCost = parseFloat(document.getElementById('total_cost').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paid_amount').value) || 0;
+            const paymentStatus = document.getElementById('payment_status');
+            
+            if (paidAmount >= totalCost) {
+                paymentStatus.value = 'paid';
+            } else if (paidAmount > 0) {
+                paymentStatus.value = 'partial';
+            } else {
+                paymentStatus.value = 'pending';
+            }
+        }
+
+        document.getElementById('total_cost').addEventListener('input', updatePaymentStatus);
+        document.getElementById('paid_amount').addEventListener('input', updatePaymentStatus);
+    </script>
+</body>
+</html>

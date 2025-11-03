@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить проживание - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Добавление нового проживания</h2>
+            <a href="/stays" class="btn btn-secondary">← Назад к проживаниям</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <form action="/stays/add" method="POST" class="form">
+            <div class="form-group">
+                <label for="client_passport">Клиент:*</label>
+                <select id="client_passport" name="client_passport" required>
+                    <option value="">Выберите клиента</option>
+                    <% clients.forEach(client => { %>
+                        <option value="<%= client.passport_data %>">
+                            <%= client.last_name %> <%= client.first_name %> (<%= client.passport_data %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="room_id">Номер:*</label>
+                <select id="room_id" name="room_id" required>
+                    <option value="">Выберите номер</option>
+                    <% rooms.forEach(room => { %>
+                        <option value="<%= room.id %>" 
+                                data-price="<%= room.price_per_night %>">
+                            №<%= room.room_number %> - <%= room.room_type %> (<%= room.price_per_night %> ₽/ночь)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="check_in_date">Дата заезда:*</label>
+                <input type="date" id="check_in_date" name="check_in_date" required 
+                       max="<%= new Date().toISOString().split('T')[0] %>" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="check_out_date">Дата выезда:*</label>
+                <input type="date" id="check_out_date" name="check_out_date" required 
+                       max="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+
+            <div class="form-group">
+                <label for="total_cost">Общая стоимость:*</label>
+                <input type="number" id="total_cost" name="total_cost" step="0.01" required min="0" 
+                       placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label for="paid_amount">Оплаченная сумма:</label>
+                <input type="number" id="paid_amount" name="paid_amount" step="0.01" min="0" 
+                       value="0" placeholder="0.00">
+            </div>
+
+            <div class="form-group">
+                <label for="status">Статус проживания:*</label>
+                <select id="status" name="status" required>
+                    <option value="active">Активно</option>
+                    <option value="completed">Завершено</option>
+                    <option value="cancelled">Отменено</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Примечания:</label>
+                <textarea id="notes" name="notes" placeholder="Дополнительная информация о проживании" rows="3"></textarea>
+            </div>
+
+            <div class="info-box" style="margin: 1.5rem 0;">
+                <h3>Информация о проживании</h3>
+                <p><strong>Количество ночей:</strong> <span id="nights-count">—</span></p>
+                <p><strong>Стоимость за ночь:</strong> <span id="price-per-night">—</span></p>
+                <p><strong>Остаток к оплате:</strong> <span id="remaining-amount">—</span></p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Создать проживание</button>
+                <a href="/stays" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        function calculateStayInfo() {
+            const checkIn = document.getElementById('check_in_date').value;
+            const checkOut = document.getElementById('check_out_date').value;
+            const totalCost = parseFloat(document.getElementById('total_cost').value) || 0;
+            const paidAmount = parseFloat(document.getElementById('paid_amount').value) || 0;
+            const roomSelect = document.getElementById('room_id');
+            const selectedRoom = roomSelect.options[roomSelect.selectedIndex];
+            const pricePerNight = selectedRoom ? parseFloat(selectedRoom.getAttribute('data-price')) : 0;
+            
+            // Расчет количества ночей
+            if (checkIn && checkOut) {
+                const nights = Math.ceil((new Date(checkOut) - new Date(checkIn)) / (1000 * 60 * 60 * 24));
+                document.getElementById('nights-count').textContent = nights;
+                
+                // Автозаполнение стоимости если не указана
+                if (totalCost === 0 && pricePerNight > 0 && nights > 0) {
+                    const calculatedCost = nights * pricePerNight;
+                    document.getElementById('total_cost').value = calculatedCost;
+                    document.getElementById('price-per-night').textContent = pricePerNight.toLocaleString('ru-RU') + ' ₽';
+                } else if (pricePerNight > 0) {
+                    document.getElementById('price-per-night').textContent = pricePerNight.toLocaleString('ru-RU') + ' ₽';
+                }
+            } else {
+                document.getElementById('nights-count').textContent = '—';
+            }
+            
+            // Расчет остатка
+            const remainingAmount = totalCost - paidAmount;
+            document.getElementById('remaining-amount').textContent = remainingAmount.toLocaleString('ru-RU') + ' ₽';
+            
+            if (remainingAmount < 0) {
+                document.getElementById('remaining-amount').style.color = '#e74c3c';
+            } else if (remainingAmount === 0) {
+                document.getElementById('remaining-amount').style.color = '#27ae60';
+            } else {
+                document.getElementById('remaining-amount').style.color = '#f39c12';
+            }
+        }
+
+        // Слушатели событий для пересчета
+        document.getElementById('check_in_date').addEventListener('change', calculateStayInfo);
+        document.getElementById('check_out_date').addEventListener('change', calculateStayInfo);
+        document.getElementById('total_cost').addEventListener('input', calculateStayInfo);
+        document.getElementById('paid_amount').addEventListener('input', calculateStayInfo);
+        document.getElementById('room_id').addEventListener('change', calculateStayInfo);
+
+        // Автоматическая установка дат
+        document.getElementById('check_in_date').addEventListener('change', function() {
+            const checkOut = document.getElementById('check_out_date');
+            checkOut.min = this.value;
+            if (checkOut.value && checkOut.value < this.value) {
+                checkOut.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

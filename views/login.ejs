@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">На главную</a>
+                <a href="/auth/register">Регистрация</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <form action="/auth/login" method="POST" class="auth-form">
+            <h2>Вход в систему</h2>
+            
+            <% if (error) { %>
+                <div class="error"><%= error %></div>
+            <% } %>
+
+            <div class="form-group">
+                <label for="login">Логин:</label>
+                <input type="text" id="login" name="login" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Войти</button>
+            
+            <div class="auth-links">
+                <p>Нет аккаунта? <a href="/auth/register">Зарегистрироваться</a></p>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

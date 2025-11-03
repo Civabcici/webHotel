@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактировать бронирование - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Редактирование бронирования #<%= booking.id %></h2>
+            <a href="/bookings" class="btn btn-secondary">← Назад к бронированиям</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <form action="/bookings/edit/<%= booking.id %>" method="POST" class="form">
+            <div class="form-group">
+                <label for="client_passport">Клиент:*</label>
+                <select id="client_passport" name="client_passport" required>
+                    <option value="">Выберите клиента</option>
+                    <% clients.forEach(client => { %>
+                        <option value="<%= client.passport_data %>" 
+                                <%= booking.client_passport === client.passport_data ? 'selected' : '' %>>
+                            <%= client.last_name %> <%= client.first_name %> (<%= client.passport_data %>)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="room_id">Номер:*</label>
+                <select id="room_id" name="room_id" required>
+                    <option value="">Выберите номер</option>
+                    <% rooms.forEach(room => { %>
+                        <option value="<%= room.id %>" 
+                                <%= booking.room_id === room.id ? 'selected' : '' %>
+                                data-price="<%= room.price_per_night %>">
+                            №<%= room.room_number %> - <%= room.room_type %> (<%= room.price_per_night %> ₽/ночь)
+                        </option>
+                    <% }); %>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="check_in_date">Дата заезда:*</label>
+                <input type="date" id="check_in_date" name="check_in_date" 
+                       value="<%= booking.check_in_date %>" required autofocus>
+            </div>
+
+            <div class="form-group">
+                <label for="check_out_date">Дата выезда:*</label>
+                <input type="date" id="check_out_date" name="check_out_date" 
+                       value="<%= booking.check_out_date %>" required>
+            </div>
+
+            <div class="form-group">
+                <label for="guests_count">Количество гостей:*</label>
+                <input type="number" id="guests_count" name="guests_count" 
+                       value="<%= booking.guests_count || 1 %>" required min="1" max="10">
+            </div>
+
+            <div class="form-group">
+                <label for="status">Статус:*</label>
+                <select id="status" name="status" required>
+                    <option value="pending" <%= booking.status === 'pending' ? 'selected' : '' %>>Ожидание</option>
+                    <option value="confirmed" <%= booking.status === 'confirmed' ? 'selected' : '' %>>Подтверждено</option>
+                    <option value="cancelled" <%= booking.status === 'cancelled' ? 'selected' : '' %>>Отменено</option>
+                    <option value="completed" <%= booking.status === 'completed' ? 'selected' : '' %>>Завершено</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="special_requests">Особые пожелания:</label>
+                <textarea id="special_requests" name="special_requests" 
+                          rows="3"><%= booking.special_requests || '' %></textarea>
+            </div>
+
+            <div class="info-box" style="margin: 1.5rem 0;">
+                <h3>Информация о бронировании</h3>
+                <p><strong>Дата создания:</strong> <%= new Date(booking.creation_date).toLocaleDateString('ru-RU') %></p>
+                <p><strong>Количество ночей:</strong> 
+                    <% 
+                        const nights = Math.ceil((new Date(booking.check_out_date) - new Date(booking.check_in_date)) / (1000 * 60 * 60 * 24));
+                    %>
+                    <%= nights %>
+                </p>
+                <p><strong>Текущая стоимость:</strong> 
+                    <%= booking.total_price ? booking.total_price.toLocaleString('ru-RU') + ' ₽' : 'Не рассчитана' %>
+                </p>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                <a href="/bookings" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        // Автоматическая установка минимальной даты выезда
+        document.getElementById('check_in_date').addEventListener('change', function() {
+            const checkOut = document.getElementById('check_out_date');
+            checkOut.min = this.value;
+            if (checkOut.value && checkOut.value < this.value) {
+                checkOut.value = '';
+            }
+        });
+    </script>
+</body>
+</html>

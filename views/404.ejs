@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Страница не найдена - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="not-found">
+            <div class="not-found-code">404</div>
+            <h2 class="not-found-text">Страница не найдена</h2>
+            <p class="not-found-desc">
+                Запрашиваемая страница не существует или была перемещена.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem;">
+                <a href="/" class="btn btn-primary">На главную</a>
+                <a href="javascript:history.back()" class="btn btn-secondary">Назад</a>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3 style="text-align: center;">Что можно сделать?</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✓ Проверьте правильность URL адреса</li>
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✓ Воспользуйтесь навигацией выше</li>
+                <li style="padding: 0.5rem 0; border-bottom: 1px solid #eee;">✓ Вернитесь на предыдущую страницу</li>
+                <li style="padding: 0.5rem 0;">✓ Свяжитесь с администратором</li>
+            </ul>
+        </div>
+    </main>
+</body>
+</html>

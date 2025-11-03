@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Добавить клиента - Гостиница</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <h1>Гостиница "Престиж"</h1>
+            <nav>
+                <a href="/">Главная</a>
+                <a href="/clients">Клиенты</a>
+                <a href="/bookings">Бронирования</a>
+                <a href="/stays">Проживания</a>
+                <% if (user) { %>
+                    <a href="/profile">Профиль</a>
+                    <a href="/auth/logout">Выйти (<%= user.login %>)</a>
+                <% } else { %>
+                    <a href="/auth/login">Войти</a>
+                    <a href="/auth/register">Регистрация</a>
+                <% } %>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="header-actions">
+            <h2>Добавление нового клиента</h2>
+            <a href="/clients" class="btn btn-secondary">← Назад к клиентам</a>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="error"><%= error %></div>
+        <% } %>
+
+        <form action="/clients/add" method="POST" class="form">
+            <div class="form-group">
+                <label for="passport_data">Паспортные данные:*</label>
+                <input type="text" id="passport_data" name="passport_data" required 
+                       placeholder="Серия и номер паспорта" autofocus>
+                <small style="color: #7f8c8d; font-size: 0.9rem;">Пример: 1234 567890</small>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Фамилия:*</label>
+                <input type="text" id="last_name" name="last_name" required 
+                       placeholder="Введите фамилию">
+            </div>
+
+            <div class="form-group">
+                <label for="first_name">Имя:*</label>
+                <input type="text" id="first_name" name="first_name" required 
+                       placeholder="Введите имя">
+            </div>
+
+            <div class="form-group">
+                <label for="middle_name">Отчество:</label>
+                <input type="text" id="middle_name" name="middle_name" 
+                       placeholder="Введите отчество (если есть)">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Телефон:*</label>
+                <input type="tel" id="phone" name="phone" required 
+                       placeholder="+7 (XXX) XXX-XX-XX">
+                <small style="color: #7f8c8d; font-size: 0.9rem;">Формат: +7 (999) 123-45-67</small>
+            </div>
+
+            <div class="form-group">
+                <label for="registration_address">Адрес регистрации:*</label>
+                <textarea id="registration_address" name="registration_address" required 
+                          placeholder="Полный адрес регистрации" rows="3"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="birth_date">Дата рождения:*</label>
+                <input type="date" id="birth_date" name="birth_date" required 
+                       max="<%= new Date().toISOString().split('T')[0] %>">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить клиента</button>
+                <a href="/clients" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        // Автоматическое форматирование телефона
+        document.getElementById('phone').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('7') || value.startsWith('8')) {
+                value = value.substring(1);
+            }
+            if (value.length > 0) {
+                value = '+7 (' + value;
+                if (value.length > 7) value = value.substring(0, 7) + ') ' + value.substring(7);
+                if (value.length > 12) value = value.substring(0, 12) + '-' + value.substring(12);
+                if (value.length > 15) value = value.substring(0, 15) + '-' + value.substring(15);
+            }
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
